@@ -46,6 +46,8 @@ def prep_data_sleep() -> pd.DataFrame:
     for col in ("summary_date", "bedtime_end", "bedtime_start"):
         df[col] = pd.to_datetime(df[col])
 
+    df["dayofweek"] = df["summary_date"].dt.dayofweek
+
     # set date as index
     df = df.set_index(["summary_date"])
 
@@ -243,7 +245,6 @@ def plotit(df, was, d_results, l_corr_pos, l_corr_neg):
 
 df = prep_data_sleep()
 
-
 interesting_properties = (
     "duration of sleep",
     "HR average",
@@ -292,3 +293,17 @@ plotit(df, was, d_results, l_corr_pos, l_corr_neg)
 
 
 fh_report.close()
+
+
+# scatter plots
+fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(8, 6))
+axes = df.plot.scatter(
+    x="start of sleep",
+    y="HR min",
+    c="dayofweek",
+    colormap="viridis",
+)
+axes.grid(zorder=0)
+plt.savefig(fname=f"plot/scatter1.png", format="png")
+
+exit()
