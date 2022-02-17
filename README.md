@@ -5,6 +5,4 @@
 * set the start date in config.json
 
 ## results
-* corelation of SleepStart and SleepDuration on various parameters
-* chart timeseries of corrleating parameters
-* a small report
+* corelation of SleepStart and SleepDuration on various parameters: chart and text file
