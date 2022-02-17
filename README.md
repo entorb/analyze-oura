@@ -6,5 +6,5 @@
 
 ## results
 * corelation of SleepStart and SleepDuration on various parameters
-* chart: timeseries of corrleating parameters
+* chart timeseries of corrleating parameters
 * a small report
