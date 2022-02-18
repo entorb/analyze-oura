@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-
-# by Torben Menke https://entorb.net
+# by Dr. Torben Menke https://entorb.net
+# https://github.com/entorb/analyze-oura
 
 """
 fetches Oura day-summary data from Oura Cloud API
