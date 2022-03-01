@@ -10,8 +10,11 @@ set the start date in config.json
 fetched data is stored in data/
 """
 
+# standard modules
 import os
 import json
+
+# external modules
 import requests
 
 os.makedirs("data", exist_ok=True)
