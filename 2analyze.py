@@ -11,7 +11,8 @@ some charts of correlating data are generated in plot/
 
 import json
 import os
-from turtle import color
+
+# from turtle import color
 
 import numpy as np
 import pandas as pd
