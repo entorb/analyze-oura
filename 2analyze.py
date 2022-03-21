@@ -304,6 +304,6 @@ axes = df.plot.scatter(
     colormap="viridis",
 )
 axes.grid(zorder=0)
-plt.savefig(fname=f"plot/scatter1.png", format="png")
+plt.savefig(fname="plot/scatter1.png", format="png")
 
 exit()
