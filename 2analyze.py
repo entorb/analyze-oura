@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # by Dr. Torben Menke https://entorb.net
 # https://github.com/entorb/analyze-oura
-
 """
-analyze data of Oura daily summaries fetched from Oura Cloud API
+Analyze data of Oura daily summaries fetched from Oura Cloud API.
+
 fetched data is read from data/
 a sleep_report.txt is generated
 some charts of correlating data are generated in plot/
@@ -18,7 +18,7 @@ import pandas as pd
 os.makedirs("plot", exist_ok=True)
 
 # empty file
-fh_report = open("sleep_report.txt", mode="w", encoding="utf-8", newline="\n")
+fh_report = os.open("sleep_report.txt", mode="w", encoding="utf-8", newline="\n")
 
 # fields: see https://cloud.ouraring.com/docs/sleep
 
@@ -31,7 +31,10 @@ fh_report = open("sleep_report.txt", mode="w", encoding="utf-8", newline="\n")
 
 
 def prep_data_sleep() -> pd.DataFrame:
-    with open("data/data_raw_sleep.json", mode="r", encoding="utf-8") as fh:
+    """
+    Prepare sleep data.
+    """
+    with open("data/data_raw_sleep.json", encoding="utf-8") as fh:
         d_json = json.load(fh)
         d_json = d_json["sleep"]  # drop first level
     # print(d)
@@ -107,6 +110,9 @@ def prep_data_sleep() -> pd.DataFrame:
 
 
 def corrlation_tester(df, was, interesting_properties):
+    """
+    Tester for Correlations.
+    """
     s = f"=== Effect of {was} ==="
     print(s)
     fh_report.write(s + "\n")
@@ -126,9 +132,11 @@ def corrlation_tester(df, was, interesting_properties):
     l_corr_none = []
     # sort by absolute value
     for column, value in sorted(
-        d_results.items(), key=lambda item: abs(item[1]), reverse=True
+        d_results.items(),
+        key=lambda item: abs(item[1]),
+        reverse=True,
     ):
-        s = "%+1.3f : %s" % (d_results[column], column)
+        s = f"{d_results[column]:+1.3f} : {column}"
         print(s)
         fh_report.write(s + "\n")
         if value >= max_corr:
@@ -143,6 +151,9 @@ def corrlation_tester(df, was, interesting_properties):
 
 
 def plotit(df, was, d_results, l_corr_pos, l_corr_neg):
+    """
+    Plot the data.
+    """
     colors = ("#1f77b4", "green")
     # colors = ("#1f77b4", "#ff7f0e")
     # from
@@ -152,19 +163,32 @@ def plotit(df, was, d_results, l_corr_pos, l_corr_neg):
         # pos correlation
 
         if pos_neg == "positive":
-            l = l_corr_pos
+            list_of_variables = l_corr_pos
         elif pos_neg == "negative":
-            l = l_corr_neg
+            list_of_variables = l_corr_neg
 
-        numplots = len(l)
+        numplots = len(list_of_variables)
         fig, axes = plt.subplots(
-            nrows=numplots, ncols=1, sharex=True, dpi=100, figsize=(8, numplots * 3)
+            nrows=numplots,
+            ncols=1,
+            sharex=True,
+            dpi=100,
+            figsize=(
+                8,
+                numplots * 3,
+            ),
         )
 
-        fig.suptitle(f"effect of '{was}' is {pos_neg} on ...", color=colors[1])
+        fig.suptitle(
+            f"effect of '{was}' is {pos_neg} on ...",
+            color=colors[1],
+        )
         i = 0
-        for column in l:
-            axes[i].set_title(f"{column}: {d_results[column]}", color=colors[0])
+        for column in list_of_variables:
+            axes[i].set_title(
+                f"{column}: {d_results[column]}",
+                color=colors[0],
+            )
             df[column].plot(
                 ax=axes[i],
                 linewidth=2.0,
@@ -267,7 +291,9 @@ was = "start of sleep"
 
 
 d_results, l_corr_pos, l_corr_neg = corrlation_tester(
-    df=df, was=was, interesting_properties=interesting_properties
+    df=df,
+    was=was,
+    interesting_properties=interesting_properties,
 )
 plotit(df, was, d_results, l_corr_pos, l_corr_neg)
 
@@ -287,7 +313,9 @@ was = "duration of sleep"
 
 
 d_results, l_corr_pos, l_corr_neg = corrlation_tester(
-    df=df, was=was, interesting_properties=interesting_properties
+    df=df,
+    was=was,
+    interesting_properties=interesting_properties,
 )
 plotit(df, was, d_results, l_corr_pos, l_corr_neg)
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # by Dr. Torben Menke https://entorb.net
 # https://github.com/entorb/analyze-oura
-
 """
-fetches Oura day-summary data from Oura Cloud API
+fetches Oura day-summary data from Oura Cloud API.
+
 requires a personal access token from https://cloud.ouraring.com/personal-access-tokens
 provide your personal access token in file token.txt
 set the start date in config.json
@@ -17,15 +17,18 @@ import requests
 
 os.makedirs("data", exist_ok=True)
 
-with open("config.json", mode="r", encoding="utf-8") as fh:
+with open("config.json", encoding="utf-8") as fh:
     config = json.load(fh)
 
-with open("token.txt", mode="r") as fh:
+with open("token.txt") as fh:
     token = fh.read()
     token = token.strip()  # trim spaces
 
 
 def fetch_data_summaries():
+    """
+    Fetch data from Oura API.
+    """
     for data_summary_set in ("sleep", "activity", "readiness"):
         print(f"fetching {data_summary_set} data")
         # url = "https://api.ouraring.com/v1/sleep"
@@ -34,20 +37,20 @@ def fetch_data_summaries():
         # start=YYYY-MM-DD
         # end=YYYY-MM-DD
         headers = {
-            #    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0 ",
-            "Authorization": f"Bearer {token}"
+            # "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0 ",
+            "Authorization": f"Bearer {token}",
         }
         cont = requests.get(url, headers=headers).content
         cont = cont.decode("utf-8")
 
-        with open(
+        with os.open(
             f"data/data_raw_{data_summary_set}.json",
             mode="w",
             encoding="utf-8",
             newline="\n",
         ) as fh:
             fh.write(cont)
-        with open(
+        with os.open(
             f"data/data_formatted_{data_summary_set}.json",
             mode="w",
             encoding="utf-8",
