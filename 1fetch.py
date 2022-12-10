@@ -2,7 +2,7 @@
 # by Dr. Torben Menke https://entorb.net
 # https://github.com/entorb/analyze-oura
 """
-fetches Oura day-summary data from Oura Cloud API.
+Fetch Oura day-summary data from Oura Cloud API.
 
 requires a personal access token from https://cloud.ouraring.com/personal-access-tokens
 provide your personal access token in file token.txt
@@ -17,15 +17,15 @@ import requests
 
 os.makedirs("data", exist_ok=True)
 
-with open("config.json", encoding="utf-8") as fh:
+with open(file="config.json", encoding="utf-8") as fh:
     config = json.load(fh)
 
-with open("token.txt") as fh:
+with open(file="token.txt") as fh:
     token = fh.read()
     token = token.strip()  # trim spaces
 
 
-def fetch_data_summaries():
+def fetch_data_summaries() -> None:
     """
     Fetch data from Oura API.
     """
@@ -43,14 +43,14 @@ def fetch_data_summaries():
         cont = requests.get(url, headers=headers).content
         cont = cont.decode("utf-8")
 
-        with os.open(
-            f"data/data_raw_{data_summary_set}.json",
+        with open(
+            file=f"data/data_raw_{data_summary_set}.json",
             mode="w",
             encoding="utf-8",
             newline="\n",
         ) as fh:
             fh.write(cont)
-        with os.open(
+        with open(
             f"data/data_formatted_{data_summary_set}.json",
             mode="w",
             encoding="utf-8",

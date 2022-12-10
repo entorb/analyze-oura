@@ -18,7 +18,12 @@ import pandas as pd
 os.makedirs("plot", exist_ok=True)
 
 # empty file
-fh_report = os.open("sleep_report.txt", mode="w", encoding="utf-8", newline="\n")
+fh_report = open(  # noqa: SIM115
+    file="sleep_report.txt",
+    mode="w",
+    encoding="utf-8",
+    newline="\n",
+)
 
 # fields: see https://cloud.ouraring.com/docs/sleep
 
@@ -34,9 +39,9 @@ def prep_data_sleep() -> pd.DataFrame:
     """
     Prepare sleep data.
     """
-    with open("data/data_raw_sleep.json", encoding="utf-8") as fh:
+    with open(file="data/data_raw_sleep.json", encoding="utf-8") as fh:
         d_json = json.load(fh)
-        d_json = d_json["sleep"]  # drop first level
+    d_json = d_json["sleep"]  # drop first level
     # print(d)
 
     # df = pd.read_json("data_raw.json")
@@ -55,9 +60,9 @@ def prep_data_sleep() -> pd.DataFrame:
     df = df.set_index(["summary_date"])
 
     df.to_csv(
-        "data/data_sleep_orig.tsv",
+        path_or_buf="data/data_sleep_orig.tsv",
         sep="\t",
-        line_terminator="\n",
+        lineterminator="\n",
     )
 
     # Adding/calcing some data fields
@@ -102,9 +107,9 @@ def prep_data_sleep() -> pd.DataFrame:
     )
 
     df.to_csv(
-        "data/data_sleep_modified.tsv",
+        path_or_buf="data/data_sleep_modified.tsv",
         sep="\t",
-        line_terminator="\n",
+        lineterminator="\n",
     )
     return df
 
@@ -150,7 +155,7 @@ def corrlation_tester(df, was, interesting_properties):
     return d_results, l_corr_pos, l_corr_neg
 
 
-def plotit(df, was, d_results, l_corr_pos, l_corr_neg):
+def plotit(df, was, d_results, l_corr_pos, l_corr_neg) -> None:
     """
     Plot the data.
     """
@@ -162,6 +167,7 @@ def plotit(df, was, d_results, l_corr_pos, l_corr_neg):
     for pos_neg in ("positive", "negative"):
         # pos correlation
 
+        list_of_variables = ()
         if pos_neg == "positive":
             list_of_variables = l_corr_pos
         elif pos_neg == "negative":
