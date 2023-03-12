@@ -40,7 +40,7 @@ def fetch_data_summaries() -> None:
             # "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0 ",
             "Authorization": f"Bearer {token}",
         }
-        cont = requests.get(url, headers=headers).content
+        cont = requests.get(url, headers=headers, timeout=3).content
         cont = cont.decode("utf-8")
 
         with open(
