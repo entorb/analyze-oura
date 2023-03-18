@@ -33,11 +33,11 @@ def fetch_data_summaries() -> None:
         print(f"fetching {data_summary_set} data")
         # url = "https://api.ouraring.com/v1/sleep"
         # -> last week
-        url = f"https://api.ouraring.com/v1/{data_summary_set}?start={config['date_start']}"
+        url = f"https://api.ouraring.com/v1/{data_summary_set}?start={config['date_start']}"  # noqa: E501
         # start=YYYY-MM-DD
         # end=YYYY-MM-DD
         headers = {
-            # "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0 ",
+            # "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0 ", # noqa: E501
             "Authorization": f"Bearer {token}",
         }
         cont = requests.get(url, headers=headers, timeout=3).content
