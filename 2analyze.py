@@ -81,7 +81,8 @@ def prep_data_sleep() -> pd.DataFrame:
 
     df["time to fall asleep"] = df["onset_latency"] / 60
 
-    # df["time to fall asleep"].where(df["time to fall asleep"] > 100, 100, inplace=True)
+    # df["time to fall asleep"].where(df["time to fall asleep"]
+    #                                 > 100, 100, inplace=True)
 
     df["time awake"] = df["awake"] / 60
 
