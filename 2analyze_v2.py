@@ -46,36 +46,38 @@ def prep_data_sleep() -> pd.DataFrame:
     with open(file="data/data_raw_sleep.json", encoding="utf-8") as fh:
         d_json = json.load(fh)
     d_json = d_json["data"]  # drop first level
-    # print(d)
 
-    # df = pd.read_json("data_raw.json")
     df = pd.DataFrame.from_dict(d_json)
+
+    # filter on sleep period=0
+    # df = df[df["period"] == 0]
+    # better:
+    # filter on >4h sleep
+    df = df[df["time_in_bed"] > 4 * 3600]
 
     # remove 5min-interval time series
     df.drop(columns=["heart_rate", "hrv", "movement_30_sec"], inplace=True)
 
-    print(df["bedtime_start"])
-    df["bedtime_start"] = pd.to_datetime(
-        df["bedtime_start"], format="%Y-%m-%dT%H:%M:%S%z"
-    )
-    print(df["bedtime_start"])
-    # df["bedtime_start"] = pd.to_datetime(df["bedtime_start"])
-    df["bedtime_start"] = df["bedtime_start"].dt.tz_convert(None)
-    print(df["bedtime_start"])
-    exit()
-    # convert to date format
-    # print(df.info())
-    # TODO: why is manual conversion to ISO 8601 format needed?
-    # "bedtime_start": "2021-12-30T23:38:05+01:00",
-    print(df["bedtime_start"])
-    for col in ("day", "bedtime_end", "bedtime_start"):
-        df[col] = pd.to_datetime(df[col])  # , format="ISO8601"
+    # DateTime parsing
+    df["day"] = pd.to_datetime(df["day"])  # , format="ISO8601"
+
+    # converting "bedtime_start": "2021-12-30T23:38:05+01:00"
+    #  to datetime without timezone (=localtime)
     for col in ("bedtime_end", "bedtime_start"):
-        # Remove the timezone information by converting to None
-        df[col] = df[col].dt.tz_convert(None)
-    # print(df.info())
-    print(df["bedtime_start"])
-    exit()
+        # # V1: proper aproach using tz_convert(None)
+        # df[col] = pd.to_datetime(df[col], format="%Y-%m-%dT%H:%M:%S%z")
+        # df[col] = df[col].dt.tz_convert(None)
+        # throws: AttributeError: Can only use .dt accessor with datetimelike values.
+        #  Did you mean: 'at'?
+
+        # V2: simple removing the timezone offset
+        # Remove the timezone information by replacing the "+01:00", "+02:00", "-02:00",
+        #  etc. with an empty string
+        df[col] = df[col].str.replace(r"[+\-]\d{2}:\d{2}.*$", "", regex=True)
+
+        # Parse the datetime column without timezone information
+        df[col] = pd.to_datetime(df[col], format="%Y-%m-%dT%H:%M:%S")
+        # note: now without the timezone %z info: format="%Y-%m-%dT%H:%M:%S%z"
 
     df["dayofweek"] = df["day"].dt.dayofweek
 
@@ -94,37 +96,30 @@ def prep_data_sleep() -> pd.DataFrame:
     df["deep sleep %"] = df["deep_sleep_duration"] / df["total_sleep_duration"] * 100
     df["light sleep %"] = df["light_sleep_duration"] / df["total_sleep_duration"] * 100
 
-    # calc start of sleep as seconds since midnight
+    # calc start of sleep as seconds since start of day -> decimal hours
     df["start of sleep"] = (
-        df["bedtime_start"].dt.hour * 3600
-        + df["bedtime_start"].dt.minute * 60
-        + df["bedtime_start"].dt.second
-    )
-    print(df[["bedtime_start", "start of sleep"]])
-    exit()
-
-    df["start of sleep"] = df["start of sleep"] / 3600
-    # -2 -> 22:00
-    # +2 -> 02:00
+        df["bedtime_start"]
+        - df.index
+        + pd.Timedelta(days=1)  # 1 day offset, since bedtime starts on the prev day
+    ).dt.total_seconds() / 3600
 
     df["duration of sleep"] = df["total_sleep_duration"] / 3600
 
     df["efficiency %"] = df["efficiency"] * 100
 
-    df["time to fall asleep"] = df["onset_latency"] / 60
+    df["time to fall asleep"] = df["latency"] / 60
 
     # df["time to fall asleep"].where(df["time to fall asleep"]
     #                                 > 100, 100, inplace=True)
 
-    df["time awake"] = df["awake"] / 60
+    df["time awake"] = df["awake_time"] / 60
 
     df.drop(
         columns=[
-            "bedtime_start_delta",
-            "total",
+            "total_sleep_duration",
             "efficiency",
-            "onset_latency",
-            "awake",
+            "latency",
+            "awake_time",
         ],
         inplace=True,
     )
@@ -132,9 +127,9 @@ def prep_data_sleep() -> pd.DataFrame:
     # rename some columns
     df.rename(
         columns={
-            "rmssd": "HRV average",
-            "hr_average": "HR average",
-            "hr_lowest": "HR min",
+            "average_hrv": "HRV average",
+            "average_heart_rate": "HR average",
+            "lowest_heart_rate": "HR min",
         },
         inplace=True,
     )
@@ -319,9 +314,8 @@ interesting_properties = (
     "REM sleep %",
     "deep sleep %",
     "light sleep %",
-    "breath_average",
-    "restless",
-    "temperature_delta",
+    "average_breath",
+    "restless_periods",
 )
 
 
