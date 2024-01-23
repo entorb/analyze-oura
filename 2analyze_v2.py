@@ -9,7 +9,7 @@ a sleep_report.txt is generated
 some charts of correlating data are generated in plot/
 """
 import json
-import os
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -19,11 +19,10 @@ import pandas as pd
 # import numpy as np
 # import matplotlib.ticker as mtick
 
-os.makedirs("plot", exist_ok=True)
+Path("plot").mkdir(exist_ok=True)
 
 # empty file
-fh_report = open(  # noqa: SIM115
-    file="sleep_report.txt",
+fh_report = Path("sleep_report.txt").open(  # noqa: SIM115
     mode="w",
     encoding="utf-8",
     newline="\n",
@@ -43,7 +42,7 @@ def prep_data_sleep() -> pd.DataFrame:
     """
     Prepare sleep data.
     """
-    with open(file="data/data_raw_sleep.json", encoding="utf-8") as fh:
+    with Path("data/data_raw_sleep.json").open(encoding="utf-8") as fh:
         d_json = json.load(fh)
     d_json = d_json["data"]  # drop first level
 
@@ -56,7 +55,7 @@ def prep_data_sleep() -> pd.DataFrame:
     df = df[df["time_in_bed"] > 4 * 3600]
 
     # remove 5min-interval time series
-    df.drop(columns=["heart_rate", "hrv", "movement_30_sec"], inplace=True)
+    df = df.drop(columns=["heart_rate", "hrv", "movement_30_sec"])
 
     # DateTime parsing
     df["day"] = pd.to_datetime(df["day"])  # , format="ISO8601"
@@ -114,24 +113,22 @@ def prep_data_sleep() -> pd.DataFrame:
 
     df["time awake"] = df["awake_time"] / 60
 
-    df.drop(
+    df = df.drop(
         columns=[
             "total_sleep_duration",
             "efficiency",
             "latency",
             "awake_time",
         ],
-        inplace=True,
     )
 
     # rename some columns
-    df.rename(
+    df = df.rename(
         columns={
             "average_hrv": "HRV average",
             "average_heart_rate": "HR average",
             "lowest_heart_rate": "HR min",
         },
-        inplace=True,
     )
 
     df.to_csv(
@@ -142,7 +139,9 @@ def prep_data_sleep() -> pd.DataFrame:
     return df
 
 
-def corrlation_tester(df, was, interesting_properties):
+def corrlation_tester(
+    df: pd.DataFrame, was: str, interesting_properties: str
+) -> tuple[dict, list, list]:
     """
     Tester for Correlations.
     """
@@ -183,7 +182,9 @@ def corrlation_tester(df, was, interesting_properties):
     return d_results, l_corr_pos, l_corr_neg
 
 
-def plotit(df, was, d_results, l_corr_pos, l_corr_neg) -> None:
+def plotit(
+    df: pd.DataFrame, was: str, d_results: dict, l_corr_pos: list, l_corr_neg: list
+) -> None:
     """
     Plot the data.
     """
@@ -366,5 +367,3 @@ axes = df.plot.scatter(
 )
 axes.grid(zorder=0)
 plt.savefig(fname="plot/scatter1.png", format="png")
-
-exit()

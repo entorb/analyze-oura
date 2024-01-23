@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # by Dr. Torben Menke https://entorb.net
 # https://github.com/entorb/analyze-oura
+
+# TODO:
+# ruff: noqa
+
 """
 Analyze data of Oura daily summaries fetched from Oura Cloud API.
 

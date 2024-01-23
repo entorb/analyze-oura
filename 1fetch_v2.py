@@ -11,18 +11,18 @@ fetched data is stored in data/
 """
 # standard modules
 import json
-import os
+from pathlib import Path
 
 import requests
 
 # external modules
 
-os.makedirs("data", exist_ok=True)
+Path("data").mkdir(exist_ok=True)
 
-with open(file="config.json", encoding="utf-8") as fh:
+with Path("config.json").open(encoding="utf-8") as fh:
     config = json.load(fh)
 
-with open(file="token.txt") as fh:
+with Path("token.txt").open() as fh:
     token = fh.read()
     token = token.strip()  # trim spaces
 
@@ -35,7 +35,7 @@ def fetch_data_summaries() -> None:
         print(f"fetching {data_summary_set} data")
         # url = "https://api.ouraring.com/v1/sleep"
         # -> last week
-        url = f"https://api.ouraring.com/v2/usercollection/{data_summary_set}?start_date={config['date_start']}"  # noqa: E501
+        url = f"https://api.ouraring.com/v2/usercollection/{data_summary_set}?start_date={config['date_start']}"
         # start=YYYY-MM-DD
         # end=YYYY-MM-DD
         headers = {
@@ -45,15 +45,13 @@ def fetch_data_summaries() -> None:
         cont = requests.get(url, headers=headers, timeout=3).content
         cont = cont.decode("utf-8")
 
-        with open(
-            file=f"data/data_raw_{data_summary_set}.json",
+        with Path(f"data/data_raw_{data_summary_set}.json").open(
             mode="w",
             encoding="utf-8",
             newline="\n",
         ) as fh:
             fh.write(cont)
-        with open(
-            f"data/data_formatted_{data_summary_set}.json",
+        with Path(f"data/data_formatted_{data_summary_set}.json").open(
             mode="w",
             encoding="utf-8",
             newline="\n",

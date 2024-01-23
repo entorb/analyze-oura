@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # by Dr. Torben Menke https://entorb.net
 # https://github.com/entorb/analyze-oura
+
+# TODO:
+# ruff: noqa
+
 """
 Fetch Oura day-summary data from Oura Cloud API.
 
@@ -33,7 +37,7 @@ def fetch_data_summaries() -> None:
         print(f"fetching {data_summary_set} data")
         # url = "https://api.ouraring.com/v1/sleep"
         # -> last week
-        url = f"https://api.ouraring.com/v1/{data_summary_set}?start={config['date_start']}"  # noqa: E501
+        url = f"https://api.ouraring.com/v1/{data_summary_set}?start={config['date_start']}"
         # start=YYYY-MM-DD
         # end=YYYY-MM-DD
         headers = {
