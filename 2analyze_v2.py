@@ -63,10 +63,10 @@ def prep_data_sleep() -> pd.DataFrame:
     # converting "bedtime_start": "2021-12-30T23:38:05+01:00"
     #  to datetime without timezone (=localtime)
     for col in ("bedtime_end", "bedtime_start"):
-        # # V1: proper aproach using tz_convert(None)
+        # # V1: proper approach using tz_convert(None)
         # df[col] = pd.to_datetime(df[col], format="%Y-%m-%dT%H:%M:%S%z")
         # df[col] = df[col].dt.tz_convert(None)
-        # throws: AttributeError: Can only use .dt accessor with datetimelike values.
+        # throws: AttributeError: Can only use .dt accessor with datetime-like values.
         #  Did you mean: 'at'?
 
         # V2: simple removing the timezone offset
@@ -89,7 +89,7 @@ def prep_data_sleep() -> pd.DataFrame:
         lineterminator="\n",
     )
 
-    # Adding/calcing some data fields
+    # Adding/calculating some data fields
 
     df["REM sleep %"] = df["rem_sleep_duration"] / df["total_sleep_duration"] * 100
     df["deep sleep %"] = df["deep_sleep_duration"] / df["total_sleep_duration"] * 100
@@ -139,7 +139,7 @@ def prep_data_sleep() -> pd.DataFrame:
     return df
 
 
-def corrlation_tester(
+def correlation_tester(
     df: pd.DataFrame, was: str, interesting_properties: str
 ) -> tuple[dict, list, list]:
     """
@@ -182,7 +182,7 @@ def corrlation_tester(
     return d_results, l_corr_pos, l_corr_neg
 
 
-def plotit(
+def plot_it(
     df: pd.DataFrame, was: str, d_results: dict, l_corr_pos: list, l_corr_neg: list
 ) -> None:
     """
@@ -257,7 +257,7 @@ def plotit(
         #     axis="x", bottom=False, top=True, labelbottom=False, labeltop=True
         # )
         axes[i - 1].set_xlabel("")
-        fig.set_tight_layout(True)
+        fig.set_tight_layout(True)  # type: ignore
         fig.savefig(fname=f"plot/sleep-{was}-{pos_neg}.png", format="png")
         plt.close()
 
@@ -320,16 +320,16 @@ interesting_properties = (
 )
 
 
-# 1. analize influece of start of sleep
+# 1. analize influence of start of sleep
 was = "start of sleep"
 
 
-d_results, l_corr_pos, l_corr_neg = corrlation_tester(
+d_results, l_corr_pos, l_corr_neg = correlation_tester(
     df=df,
     was=was,
-    interesting_properties=interesting_properties,
+    interesting_properties=interesting_properties,  # type: ignore
 )
-plotit(df, was, d_results, l_corr_pos, l_corr_neg)
+plot_it(df, was, d_results, l_corr_pos, l_corr_neg)
 
 
 # my results:
@@ -341,17 +341,17 @@ plotit(df, was, d_results, l_corr_pos, l_corr_neg)
 
 # print("\n")
 
-# 2. analize influece of sleep duration
+# 2. analize influence of sleep duration
 
 was = "duration of sleep"
 
 
-d_results, l_corr_pos, l_corr_neg = corrlation_tester(
+d_results, l_corr_pos, l_corr_neg = correlation_tester(
     df=df,
     was=was,
-    interesting_properties=interesting_properties,
+    interesting_properties=interesting_properties,  # type: ignore
 )
-plotit(df, was, d_results, l_corr_pos, l_corr_neg)
+plot_it(df, was, d_results, l_corr_pos, l_corr_neg)
 
 
 fh_report.close()
