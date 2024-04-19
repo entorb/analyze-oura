@@ -13,6 +13,7 @@ provide your personal access token in file token.txt
 set the start date in config.json
 fetched data is stored in data/
 """
+
 # standard modules
 import json
 import os

@@ -19,7 +19,7 @@ exclude: |
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
       - id: check-added-large-files
         args: ["--maxkb=500"]
@@ -62,7 +62,7 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.1.14"
+    rev: "v0.4.1"
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
@@ -90,16 +90,22 @@ repos:
   #     - id: mypy
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.38.0
+    rev: v0.39.0
     hooks:
       - id: markdownlint
         args: ["--disable", "MD013"]
 
-  # # code spell check via cspell
+  # code spell check via cspell
   - repo: https://github.com/streetsidesoftware/cspell-cli
-    rev: v8.3.0
+    rev: v8.7.0
     hooks:
       - id: cspell
+
+  # CRLF -> LF
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.5
+    hooks:
+      - id: remove-crlf
 
   # # Perl
   # - repo: https://github.com/henryykt/pre-commit-perl

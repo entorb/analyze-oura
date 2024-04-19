@@ -8,6 +8,7 @@ fetched data is read from data/
 a sleep_report.txt is generated
 some charts of correlating data are generated in plot/
 """
+
 import json
 from pathlib import Path
 
