@@ -16,16 +16,17 @@ from pathlib import Path
 
 import requests
 
-# external modules
-
 Path("data").mkdir(exist_ok=True)
 
 with Path("config.json").open(encoding="utf-8") as fh:
     config = json.load(fh)
 
-with Path("token.txt").open() as fh:
-    token = fh.read()
-    token = token.strip()  # trim spaces
+try:
+    with Path("token.txt").open() as fh:
+        token = fh.read().strip()  # trim spaces
+except FileNotFoundError:
+    msg = "token.txt not found."
+    raise FileNotFoundError(msg) from None
 
 
 def fetch_data_summaries() -> None:
@@ -43,20 +44,23 @@ def fetch_data_summaries() -> None:
             # "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0 ", # noqa: E501
             "Authorization": f"Bearer {token}",
         }
-        cont = requests.get(url, headers=headers, timeout=3).content
-        cont = cont.decode("utf-8")
 
-        with Path(f"data/data_raw_{data_summary_set}.json").open(
-            mode="w",
-            encoding="utf-8",
-            newline="\n",
-        ) as fh:
+        try:
+            response = requests.get(url, headers=headers, timeout=3)
+            response.raise_for_status()  # Raise an HTTPError for bad responses
+            cont = response.content.decode("utf-8")
+        except requests.RequestException as e:
+            print(f"Error fetching {data_summary_set} data: {e}")
+            continue
+
+        # Write raw data to file
+        raw_data_path = Path(f"data/data_raw_{data_summary_set}.json")
+        with raw_data_path.open(mode="w", encoding="utf-8", newline="\n") as fh:
             fh.write(cont)
-        with Path(f"data/data_formatted_{data_summary_set}.json").open(
-            mode="w",
-            encoding="utf-8",
-            newline="\n",
-        ) as fh:
+
+        # Write formatted data to file
+        formatted_data_path = Path(f"data/data_formatted_{data_summary_set}.json")
+        with formatted_data_path.open(mode="w", encoding="utf-8", newline="\n") as fh:
             d = json.loads(cont)
             json.dump(d, fh, ensure_ascii=False, sort_keys=False, indent=True)
 
