@@ -46,7 +46,7 @@ def fetch_data_summaries() -> None:
         }
 
         try:
-            response = requests.get(url, headers=headers, timeout=3)
+            response = requests.get(url, headers=headers, timeout=15)
             response.raise_for_status()  # Raise an HTTPError for bad responses
             cont = response.content.decode("utf-8")
         except requests.RequestException as e:
