@@ -1,10 +1,5 @@
-#!/usr/bin/env python3
 # by Dr. Torben Menke https://entorb.net
 # https://github.com/entorb/analyze-oura
-
-# TODO:
-# ruff: noqa
-
 """
 Analyze data of Oura daily summaries fetched from Oura Cloud API.
 
@@ -14,7 +9,7 @@ some charts of correlating data are generated in plot/
 """
 
 import json
-import os
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -24,11 +19,11 @@ import pandas as pd
 # import numpy as np
 # import matplotlib.ticker as mtick
 
-os.makedirs("plot", exist_ok=True)
+Path("plot").mkdir(exist_ok=True)
+Path("report").mkdir(exist_ok=True)
 
 # empty file
-fh_report = open(  # noqa: SIM115
-    file="sleep_report.txt",
+fh_report = Path("report/sleep_report.txt").open(  # noqa: SIM115
     mode="w",
     encoding="utf-8",
     newline="\n",
@@ -48,25 +43,46 @@ def prep_data_sleep() -> pd.DataFrame:
     """
     Prepare sleep data.
     """
-    with open(file="data/data_raw_sleep.json", encoding="utf-8") as fh:
+    with Path("data/data_raw_sleep.json").open(encoding="utf-8") as fh:
         d_json = json.load(fh)
-    d_json = d_json["sleep"]  # drop first level
-    # print(d)
+    d_json = d_json["data"]  # drop first level
 
-    # df = pd.read_json("data_raw.json")
     df = pd.DataFrame.from_dict(d_json)
 
-    # remove time series
-    df.drop(columns=["hr_5min", "rmssd_5min", "hypnogram_5min"], inplace=True)
+    # filter on sleep period=0
+    # df = df[df["period"] == 0]
+    # better:
+    # filter on >4h sleep
+    df = df[df["time_in_bed"] > 4 * 3600]
 
-    # convert to date format
-    for col in ("summary_date", "bedtime_end", "bedtime_start"):
-        df[col] = pd.to_datetime(df[col])
+    # remove 5min-interval time series
+    df = df.drop(columns=["heart_rate", "hrv", "movement_30_sec"])
 
-    df["dayofweek"] = df["summary_date"].dt.dayofweek
+    # DateTime parsing
+    df["day"] = pd.to_datetime(df["day"])  # , format="ISO8601"
+
+    # converting "bedtime_start": "2021-12-30T23:38:05+01:00"
+    #  to datetime without timezone (=localtime)
+    for col in ("bedtime_end", "bedtime_start"):
+        # # V1: proper approach using tz_convert(None)
+        # df[col] = pd.to_datetime(df[col], format="%Y-%m-%dT%H:%M:%S%z")
+        # df[col] = df[col].dt.tz_convert(None)
+        # throws: AttributeError: Can only use .dt accessor with datetime-like values.
+        #  Did you mean: 'at'?
+
+        # V2: simple removing the timezone offset
+        # Remove the timezone information by replacing the "+01:00", "+02:00", "-02:00",
+        #  etc. with an empty string
+        df[col] = df[col].str.replace(r"[+\-]\d{2}:\d{2}.*$", "", regex=True)
+
+        # Parse the datetime column without timezone information
+        df[col] = pd.to_datetime(df[col], format="%Y-%m-%dT%H:%M:%S")
+        # note: now without the timezone %z info: format="%Y-%m-%dT%H:%M:%S%z"
+
+    df["dayofweek"] = df["day"].dt.dayofweek
 
     # set date as index
-    df = df.set_index(["summary_date"])
+    df = df.set_index(["day"])
 
     df.to_csv(
         path_or_buf="data/data_sleep_orig.tsv",
@@ -74,46 +90,46 @@ def prep_data_sleep() -> pd.DataFrame:
         lineterminator="\n",
     )
 
-    # Adding/calcing some data fields
+    # Adding/calculating some data fields
 
-    df["REM sleep %"] = df["rem"] / df["total"] * 100
-    df["deep sleep %"] = df["deep"] / df["total"] * 100
-    df["light sleep %"] = df["light"] / df["total"] * 100
+    df["REM sleep %"] = df["rem_sleep_duration"] / df["total_sleep_duration"] * 100
+    df["deep sleep %"] = df["deep_sleep_duration"] / df["total_sleep_duration"] * 100
+    df["light sleep %"] = df["light_sleep_duration"] / df["total_sleep_duration"] * 100
 
-    df["start of sleep"] = df["bedtime_start_delta"] / 3600
-    # -2 -> 22:00
-    # +2 -> 02:00
+    # calc start of sleep as seconds since start of day -> decimal hours
+    df["start of sleep"] = (
+        df["bedtime_start"]
+        - df.index
+        + pd.Timedelta(days=1)  # 1 day offset, since bedtime starts on the prev day
+    ).dt.total_seconds() / 3600
 
-    df["duration of sleep"] = df["total"] / 3600
+    df["duration of sleep"] = df["total_sleep_duration"] / 3600
 
     df["efficiency %"] = df["efficiency"] * 100
 
-    df["time to fall asleep"] = df["onset_latency"] / 60
+    df["time to fall asleep"] = df["latency"] / 60
 
     # df["time to fall asleep"].where(df["time to fall asleep"]
     #                                 > 100, 100, inplace=True)
 
-    df["time awake"] = df["awake"] / 60
+    df["time awake"] = df["awake_time"] / 60
 
-    df.drop(
+    df = df.drop(
         columns=[
-            "bedtime_start_delta",
-            "total",
+            "total_sleep_duration",
             "efficiency",
-            "onset_latency",
-            "awake",
+            "latency",
+            "awake_time",
         ],
-        inplace=True,
     )
 
     # rename some columns
-    df.rename(
+    df = df.rename(
         columns={
-            "rmssd": "HRV average",
-            "hr_average": "HR average",
-            "hr_lowest": "HR min",
+            "average_hrv": "HRV average",
+            "average_heart_rate": "HR average",
+            "lowest_heart_rate": "HR min",
         },
-        inplace=True,
     )
 
     df.to_csv(
@@ -124,7 +140,9 @@ def prep_data_sleep() -> pd.DataFrame:
     return df
 
 
-def corrlation_tester(df, was, interesting_properties):
+def correlation_tester(
+    df: pd.DataFrame, was: str, interesting_properties: str
+) -> tuple[dict, list, list]:
     """
     Tester for Correlations.
     """
@@ -165,7 +183,9 @@ def corrlation_tester(df, was, interesting_properties):
     return d_results, l_corr_pos, l_corr_neg
 
 
-def plotit(df, was, d_results, l_corr_pos, l_corr_neg) -> None:
+def plot_it(
+    df: pd.DataFrame, was: str, d_results: dict, l_corr_pos: list, l_corr_neg: list
+) -> None:
     """
     Plot the data.
     """
@@ -238,7 +258,7 @@ def plotit(df, was, d_results, l_corr_pos, l_corr_neg) -> None:
         #     axis="x", bottom=False, top=True, labelbottom=False, labeltop=True
         # )
         axes[i - 1].set_xlabel("")
-        fig.set_tight_layout(True)
+        fig.set_tight_layout(True)  # type: ignore
         fig.savefig(fname=f"plot/sleep-{was}-{pos_neg}.png", format="png")
         plt.close()
 
@@ -296,22 +316,21 @@ interesting_properties = (
     "REM sleep %",
     "deep sleep %",
     "light sleep %",
-    "breath_average",
-    "restless",
-    "temperature_delta",
+    "average_breath",
+    "restless_periods",
 )
 
 
-# 1. analize influece of start of sleep
+# 1. analize influence of start of sleep
 was = "start of sleep"
 
 
-d_results, l_corr_pos, l_corr_neg = corrlation_tester(
+d_results, l_corr_pos, l_corr_neg = correlation_tester(
     df=df,
     was=was,
-    interesting_properties=interesting_properties,
+    interesting_properties=interesting_properties,  # type: ignore
 )
-plotit(df, was, d_results, l_corr_pos, l_corr_neg)
+plot_it(df, was, d_results, l_corr_pos, l_corr_neg)
 
 
 # my results:
@@ -323,17 +342,17 @@ plotit(df, was, d_results, l_corr_pos, l_corr_neg)
 
 # print("\n")
 
-# 2. analize influece of sleep duration
+# 2. analize influence of sleep duration
 
 was = "duration of sleep"
 
 
-d_results, l_corr_pos, l_corr_neg = corrlation_tester(
+d_results, l_corr_pos, l_corr_neg = correlation_tester(
     df=df,
     was=was,
-    interesting_properties=interesting_properties,
+    interesting_properties=interesting_properties,  # type: ignore
 )
-plotit(df, was, d_results, l_corr_pos, l_corr_neg)
+plot_it(df, was, d_results, l_corr_pos, l_corr_neg)
 
 
 fh_report.close()
@@ -349,5 +368,3 @@ axes = df.plot.scatter(
 )
 axes.grid(zorder=0)
 plt.savefig(fname="plot/scatter1.png", format="png")
-
-exit()
