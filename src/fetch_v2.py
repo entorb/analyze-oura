@@ -18,7 +18,6 @@ Path("data").mkdir(exist_ok=True)
 
 with (Path("src/config.toml")).open("rb") as f:
     config = tomllib.load(f)
-    print(config)
 
 try:
     with Path("token.txt").open() as fh:
