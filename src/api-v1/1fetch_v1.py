@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # by Dr. Torben Menke https://entorb.net
 # https://github.com/entorb/analyze-oura
 
