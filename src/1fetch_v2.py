@@ -1,31 +1,30 @@
-#!/usr/bin/env python3
 # by Dr. Torben Menke https://entorb.net
 # https://github.com/entorb/analyze-oura
 """
 Fetch Oura day-summary data from Oura Cloud API.
 
-requires a personal access token from https://cloud.ouraring.com/personal-access-tokens
 provide your personal access token in file token.txt
-set the start date in config.json
+set the start date in config.toml
 fetched data is stored in data/
 """
 
-# standard modules
 import json
+import tomllib
 from pathlib import Path
 
 import requests
 
 Path("data").mkdir(exist_ok=True)
 
-with Path("config.json").open(encoding="utf-8") as fh:
-    config = json.load(fh)
+with (Path("src/config.toml")).open("rb") as f:
+    config = tomllib.load(f)
+    print(config)
 
 try:
     with Path("token.txt").open() as fh:
         token = fh.read().strip()  # trim spaces
 except FileNotFoundError:
-    msg = "token.txt not found."
+    msg = "token.txt not found, see README.md for instructions."
     raise FileNotFoundError(msg) from None
 
 
