@@ -1,8 +1,8 @@
 .vscode/
 data/
 plot/
+report/
 
 token.txt
-sleep_report.txt
 
 .DS_Store

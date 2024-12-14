@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # by Dr. Torben Menke https://entorb.net
 # https://github.com/entorb/analyze-oura
 """
@@ -21,9 +20,10 @@ import pandas as pd
 # import matplotlib.ticker as mtick
 
 Path("plot").mkdir(exist_ok=True)
+Path("report").mkdir(exist_ok=True)
 
 # empty file
-fh_report = Path("sleep_report.txt").open(  # noqa: SIM115
+fh_report = Path("report/sleep_report.txt").open(  # noqa: SIM115
     mode="w",
     encoding="utf-8",
     newline="\n",
