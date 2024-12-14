@@ -18,7 +18,9 @@ nrows
 numplots
 Oura
 pyupgrade
+selectbox
 sharex
+Streamlit
 suptitle
 Torben
 viridis
