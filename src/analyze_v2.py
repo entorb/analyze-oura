@@ -303,68 +303,63 @@ def plot_it(
     # plt.close()
 
 
-df = prep_data_sleep()
+if __name__ == "__main__":
+    df = prep_data_sleep()
 
-interesting_properties = (
-    "duration of sleep",
-    "HR average",
-    "HR min",
-    "HRV average",
-    "time to fall asleep",
-    "time awake",
-    "efficiency %",
-    "REM sleep %",
-    "deep sleep %",
-    "light sleep %",
-    "average_breath",
-    "restless_periods",
-)
+    interesting_properties = (
+        "duration of sleep",
+        "HR average",
+        "HR min",
+        "HRV average",
+        "time to fall asleep",
+        "time awake",
+        "efficiency %",
+        "REM sleep %",
+        "deep sleep %",
+        "light sleep %",
+        "average_breath",
+        "restless_periods",
+    )
 
+    # 1. analize influence of start of sleep
+    was = "start of sleep"
 
-# 1. analize influence of start of sleep
-was = "start of sleep"
+    d_results, l_corr_pos, l_corr_neg = correlation_tester(
+        df=df,
+        was=was,
+        interesting_properties=interesting_properties,  # type: ignore
+    )
+    plot_it(df, was, d_results, l_corr_pos, l_corr_neg)
 
+    # my results:
+    # time start sleep up (=later) ->
+    # total sleep time down
+    # hr up
+    # mrssd down
+    # REM sleep % down
 
-d_results, l_corr_pos, l_corr_neg = correlation_tester(
-    df=df,
-    was=was,
-    interesting_properties=interesting_properties,  # type: ignore
-)
-plot_it(df, was, d_results, l_corr_pos, l_corr_neg)
+    # print("\n")
 
+    # 2. analize influence of sleep duration
 
-# my results:
-# time start sleep up (=later) ->
-# total sleep time down
-# hr up
-# mrssd down
-# REM sleep % down
+    was = "duration of sleep"
 
-# print("\n")
+    d_results, l_corr_pos, l_corr_neg = correlation_tester(
+        df=df,
+        was=was,
+        interesting_properties=interesting_properties,  # type: ignore
+    )
+    plot_it(df, was, d_results, l_corr_pos, l_corr_neg)
 
-# 2. analize influence of sleep duration
+    fh_report.close()
 
-was = "duration of sleep"
-
-
-d_results, l_corr_pos, l_corr_neg = correlation_tester(
-    df=df,
-    was=was,
-    interesting_properties=interesting_properties,  # type: ignore
-)
-plot_it(df, was, d_results, l_corr_pos, l_corr_neg)
-
-
-fh_report.close()
-
-
-# scatter plots
-fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(8, 6))
-axes = df.plot.scatter(
-    x="start of sleep",
-    y="HR min",
-    c="dayofweek",
-    colormap="viridis",
-)
-axes.grid(zorder=0)
-plt.savefig(fname="plot/scatter1.png", format="png")
+    # scatter plots
+    fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(8, 6))
+    axes = df.plot.scatter(
+        x="start of sleep",
+        y="HR min",
+        c="dayofweek",
+        colormap="viridis",
+    )
+    axes.grid(zorder=0)
+    plt.savefig(fname="plot/scatter1.png", format="png")
