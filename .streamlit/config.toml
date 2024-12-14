@@ -1,0 +1,7 @@
+[browser]
+gatherUsageStats = false
+
+[server]
+port = 8501
+# restrict access to localhost
+address = "127.0.0.1"
