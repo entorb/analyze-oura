@@ -33,8 +33,6 @@ def fetch_data_summaries() -> None:
     """
     for data_summary_set in ("sleep",):  # , "activity", "readiness"
         print(f"fetching {data_summary_set} data")
-        # url = "https://api.ouraring.com/v1/sleep"
-        # -> last week
         url = f"https://api.ouraring.com/v2/usercollection/{data_summary_set}?start_date={config['date_start']}"
         # start=YYYY-MM-DD
         # end=YYYY-MM-DD
@@ -51,13 +49,7 @@ def fetch_data_summaries() -> None:
             print(f"Error fetching {data_summary_set} data: {e}")
             continue
 
-        # Write raw data to file
-        raw_data_path = Path(f"data/data_raw_{data_summary_set}.json")
-        with raw_data_path.open(mode="w", encoding="utf-8", newline="\n") as fh:
-            fh.write(cont)
-
-        # Write formatted data to file
-        formatted_data_path = Path(f"data/data_formatted_{data_summary_set}.json")
+        formatted_data_path = Path(f"data/data_{data_summary_set}.json")
         with formatted_data_path.open(mode="w", encoding="utf-8", newline="\n") as fh:
             d = json.loads(cont)
             json.dump(d, fh, ensure_ascii=False, sort_keys=False, indent=True)
