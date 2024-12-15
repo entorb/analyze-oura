@@ -8,8 +8,8 @@
 ## Run
 
 * set the start date in [config.toml](src/config.toml)
-* [fetch_v2.py](src/fetch_v2.py): download your Oura data to [data/](data/)
-* [analyze_v2.py](src/analyze_v2.py): analyze your Oura data
+* [fetch.py](src/fetch.py): download your Oura data to [data/](data/)
+* [report.py](src/report.py): analyze your Oura data
 * [app.py](src/app.py): Streamlit visualization
 
 ## Results
