@@ -13,6 +13,5 @@ ignorePaths:
   - ".*"
   - "dist"
   - "build"
-  - "node_modules"
   - "requirements.txt"
-  - "api-v1"
+  - "src/deprecated"
