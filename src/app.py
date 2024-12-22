@@ -93,9 +93,10 @@ for prop in ("score", "start of sleep", "sleep total h", "HR average", "HRV aver
     c = base.mark_point(size=100).encode(
         y=alt.Y(prop, scale=alt.Scale(domain=[ymin, ymax])),
     )
-    cr = c.transform_regression("day", prop).mark_line(color="grey", strokeDash=[4, 4])
-    cl = c.mark_line()
-    layers = alt.layer(c, cr, cl)  # .resolve_scale(y="independent")
+    reg_line = c.transform_regression("day", prop).mark_line(
+        color="gray", strokeDash=[4, 4]
+    )
+    layers = alt.layer(c, c.mark_line(), reg_line)  # .resolve_scale(y="independent")
     st.altair_chart(layers, use_container_width=True)  # type: ignore
 
 
