@@ -4,8 +4,6 @@
 #  pre-commit install
 # run manually
 #  pre-commit run --all-files
-# or
-#  pre-commit run --files myFile1.py myFile2.py
 # update hooks to latest version
 #  pre-commit autoupdate
 
@@ -62,7 +60,7 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.8.3"
+    rev: "v0.11.2"
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
@@ -90,14 +88,14 @@ repos:
   #     - id: mypy
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.43.0
+    rev: v0.44.0
     hooks:
       - id: markdownlint
         args: ["--disable", "MD013"]
 
   # code spell check via cspell
   - repo: https://github.com/streetsidesoftware/cspell-cli
-    rev: v8.16.1
+    rev: v8.17.3
     hooks:
       - id: cspell
 
