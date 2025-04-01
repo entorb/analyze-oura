@@ -14,11 +14,6 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# from turtle import color
-
-# import numpy as np
-# import matplotlib.ticker as mtick
-
 Path("plot").mkdir(exist_ok=True)
 Path("report").mkdir(exist_ok=True)
 
@@ -178,7 +173,7 @@ def prep_data_sleep() -> pd.DataFrame:
 
 
 def correlation_tester(
-    df: pd.DataFrame, was: str, interesting_properties: str
+    df: pd.DataFrame, was: str, interesting_properties: list[str]
 ) -> tuple[dict, list, list]:
     """
     Tester for Correlations.
@@ -226,10 +221,8 @@ def plot_it(
     """
     Plot the data.
     """
-    colors = ("#1f77b4", "green")
-    # colors = ("#1f77b4", "#ff7f0e")
-    # from
-    # colors = axes[0].lines[0].get_color(), axes[0].right_ax.lines[0].get_color()
+    colors = ("#1f77b4", "green")  # "#ff7f0e"
+    # or colors = axes[0].lines[0].get_color(), axes[0].right_ax.lines[0].get_color()
 
     for pos_neg in ("positive", "negative"):
         # pos correlation
@@ -343,7 +336,7 @@ def plot_it(
 if __name__ == "__main__":
     df = prep_data_sleep()
 
-    interesting_properties = (
+    interesting_properties = [
         "sleep total h",
         "HR average",
         "HR mini",
@@ -356,7 +349,7 @@ if __name__ == "__main__":
         "light sleep %",
         "average_breath",
         "restless_periods",
-    )
+    ]
 
     # 1. analize influence of start of sleep
     was = "start of sleep"
