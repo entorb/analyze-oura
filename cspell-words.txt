@@ -21,6 +21,8 @@ Oura
 pyupgrade
 selectbox
 sharex
+SonarCloud
+SonarQube
 Streamlit
 suptitle
 Torben

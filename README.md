@@ -20,3 +20,7 @@
   * interactive visualization
   * start via
   * `streamlit run src/app`
+
+## SonarQube Code Analysis
+
+At [sonarcloud.io](https://sonarcloud.io/summary/overall?id=entorb_analyze-oura&branch=main)
