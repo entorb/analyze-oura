@@ -11,6 +11,7 @@
   * set the start date of the data to download
 * [fetch.py](src/fetch.py)
   * download your Oura data to [data/](data/)
+  * alternatively: manually download [sleep.json](https://cloud.ouraring.com/account/export/sleep/json) or [sleep.csv](https://cloud.ouraring.com/account/export/sleep/csv)
 * [report.py](src/report.py)
   * analyze your data
   * generate static reports
