@@ -12,7 +12,7 @@ default_language_version:
 
 exclude: |
   (?x)^(
-    \.vscode/.*|
+    \.vscode/.*|.*/deprecated/.*|
   )$
 
 repos:
