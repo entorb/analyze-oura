@@ -12,7 +12,7 @@ default_language_version:
 
 exclude: |
   (?x)^(
-    \.vscode/.*|.*/deprecated/.*|
+    \.vscode/.*|.*/deprecated/.*
   )$
 
 repos:
@@ -55,52 +55,36 @@ repos:
         args: ["--pytest-test-first"]
       # - id: no-commit-to-branch
       #   args: [--branch, staging]
-      # - id: pretty-format-json
-      #   args: ["--autofix", "--no-ensure-ascii", "--no-sort-keys"]
+      - id: pretty-format-json
+        args: ["--autofix", "--no-ensure-ascii", "--no-sort-keys"]
       - id: requirements-txt-fixer
       # - id: sort-simple-yaml
       #  files: ^config/simple/
       - id: trailing-whitespace
 
   # ruff
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.11.6"
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.8
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
 
-  # minor formatting
-  - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.10.0
+  # security
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.27.2
     hooks:
-      - id: python-check-blanket-noqa
-      # not, since '# type: ignore' is ok for me
-      # - id: python-check-blanket-type-ignore
-      - id: python-check-mock-methods
-      - id: python-no-eval
-      - id: python-no-log-warn
-      - id: python-use-type-annotations
-      - id: rst-backticks
-      - id: rst-directive-colons
-      - id: rst-inline-touching-normal
-      - id: text-unicode-replacement-char
-
-  # CRLF -> LF
-  - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.5
-    hooks:
-      - id: remove-crlf
+      - id: gitleaks
 
   # markdown
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.44.0
+    rev: v0.45.0
     hooks:
       - id: markdownlint
         args: ["--disable", "MD013"]
 
   # code spell check via cspell
   - repo: https://github.com/streetsidesoftware/cspell-cli
-    rev: v8.19.0
+    rev: v9.0.1
     hooks:
       - id: cspell
