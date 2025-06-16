@@ -8,6 +8,7 @@ set the start date in config.toml
 fetched data is stored in data/
 """
 
+import csv
 import json
 import tomllib
 from pathlib import Path
@@ -53,6 +54,16 @@ def fetch_data_summaries() -> None:
         with formatted_data_path.open(mode="w", encoding="utf-8", newline="\n") as fh:
             d = json.loads(cont)
             json.dump(d, fh, ensure_ascii=False, sort_keys=False, indent=True)
+
+            # convert json dict to csv
+            # Assume the main data is under the "data" key
+            assert "data" in d
+            assert isinstance(d["data"], list)
+            csv_path = formatted_data_path.with_suffix(".csv")
+            with csv_path.open(mode="w", encoding="utf-8", newline="") as fh2:
+                writer = csv.DictWriter(fh2, fieldnames=d["data"][0].keys())
+                writer.writeheader()
+                writer.writerows(d["data"])
 
 
 if __name__ == "__main__":
