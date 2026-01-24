@@ -97,7 +97,7 @@ for prop in ("score", "start of sleep", "sleep total h", "HR average", "HRV aver
         color="gray", strokeDash=[4, 4]
     )
     layers = alt.layer(c, c.mark_line(), reg_line)  # .resolve_scale(y="independent")
-    st.altair_chart(layers, use_container_width=True)  # type: ignore
+    st.altair_chart(layers, width="stretch")  # type: ignore
 
 
 c1 = base.mark_line().encode(
@@ -107,7 +107,7 @@ c2 = base.mark_line(color="red").encode(
     y=alt.Y("HRV average"),
 )
 layers = alt.layer(c1, c2).resolve_scale(y="independent")
-st.altair_chart(layers, use_container_width=True)  # type: ignore
+st.altair_chart(layers, width="stretch")  # type: ignore
 
 c1 = base.mark_line().encode(
     y=alt.Y("sleep total h"),
@@ -116,7 +116,7 @@ c2 = base.mark_line(color="red").encode(
     y=alt.Y("HR average"),
 )
 layers = alt.layer(c1, c2).resolve_scale(y="independent")
-st.altair_chart(layers, use_container_width=True)  # type: ignore
+st.altair_chart(layers, width="stretch")  # type: ignore
 
 
 st.columns(1)
