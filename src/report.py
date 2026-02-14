@@ -69,8 +69,8 @@ def prep_data_sleep() -> pd.DataFrame:
     #  to datetime without timezone (=localtime)
     for col in ("bedtime_end", "bedtime_start"):
         df[col] = pd.to_datetime(df[col], format="ISO8601", utc=True)
-        df[col] = df[col].dt.tz_convert(tz="Europe/Berlin")
-        df[col] = df[col].dt.tz_localize(None)
+        df[col] = df[col].dt.tz_convert(tz="Europe/Berlin")  # type: ignore
+        df[col] = df[col].dt.tz_localize(None)  # type: ignore
 
     # remove 5min-interval time series
     df = df.drop(columns=["heart_rate", "hrv", "movement_30_sec"])
@@ -93,7 +93,7 @@ def prep_data_sleep() -> pd.DataFrame:
 
     # DateTime parsing
     df["day"] = pd.to_datetime(df["day"], format="%Y-%m-%d")  # , format="ISO8601"
-    df["dayofweek"] = df["day"].dt.dayofweek
+    df["dayofweek"] = df["day"].dt.dayofweek  # type: ignore
     df["week_no"] = df["day"].apply(lambda x: x.isocalendar()[1])
     df["week_even"] = df["week_no"].apply(lambda x: x % 2 == 0)
 
@@ -116,11 +116,11 @@ def prep_data_sleep() -> pd.DataFrame:
             df["bedtime_start"]
             - df["day"]
             + pd.Timedelta(days=1)  # 1 day offset, since bedtime starts on the prev day
-        ).dt.total_seconds()
+        ).dt.total_seconds()  # type: ignore
         / 3600
     ).round(1)
     df["end of sleep"] = (
-        df["bedtime_end"].dt.hour + df["bedtime_end"].dt.minute / 60
+        df["bedtime_end"].dt.hour + df["bedtime_end"].dt.minute / 60  # type: ignore
     ).round(1)
 
     # df["time to fall asleep"].where(df["time to fall asleep"]
@@ -167,7 +167,7 @@ def prep_data_sleep() -> pd.DataFrame:
         lineterminator="\n",
     )
     # set date as index
-    df["day"] = df["day"].dt.date
+    df["day"] = df["day"].dt.date  # type: ignore
     df = df.set_index(["day"])
     return df
 
@@ -333,7 +333,7 @@ def plot_it(
     # plt.close()
 
 
-if __name__ == "__main__":
+def main() -> None:  # noqa: D103
     df = prep_data_sleep()
 
     interesting_properties = [
@@ -384,7 +384,7 @@ if __name__ == "__main__":
     fh_report.close()
 
     # scatter plots
-    fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(8, 6))
+    _fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(8, 6))
     axes = df.plot.scatter(
         x="start of sleep",
         y="HR mini",
@@ -393,3 +393,7 @@ if __name__ == "__main__":
     )
     axes.grid(zorder=0)
     plt.savefig(fname="plot/scatter1.png", format="png")
+
+
+if __name__ == "__main__":
+    main()

@@ -10,6 +10,7 @@ isort
 labelbottom
 labeltop
 linewidth
+matplotlib
 Menke
 mrssd
 mtick
@@ -17,7 +18,9 @@ ncols
 noqa
 nrows
 numplots
+numpy
 Oura
+polyfit
 pyupgrade
 selectbox
 sharex
