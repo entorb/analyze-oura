@@ -7,6 +7,10 @@ on:
   pull_request:
     branches: ["main"]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -15,33 +19,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v6
         with:
           persist-credentials: false
           fetch-depth: 1 # 0 if you want to push to repo
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
       - name: Python set up
         uses: actions/setup-python@v6
         with:
           python-version-file: ".python-version"
-          cache: "pip"
 
-      - name: Python cache set up
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-py-cache
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      # - name: Run pytest unittests
+      #   run: |
+      #     uv run --frozen pytest tests/ --cov --cov-report=xml:coverage.xml
 
       - name: Run pre-commit hooks
         uses: pre-commit/action@v3.0.1
-
-      # - name: Install and run pytest
-      #   run: |
-      #     pip install pytest
-      #     pytest
