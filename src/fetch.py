@@ -10,6 +10,7 @@ fetched data is stored in data/
 
 import csv
 import json
+import sys
 import tomllib
 from pathlib import Path
 
@@ -24,8 +25,9 @@ try:
     with Path("token.txt").open() as fh:
         token = fh.read().strip()  # trim spaces
 except FileNotFoundError:
-    msg = "token.txt not found, see README.md for instructions."
-    raise FileNotFoundError(msg) from None
+    msg = "ERROR: token.txt missing, see README.md for instructions."
+    print(msg)
+    sys.exit()
 
 
 def fetch_data_summaries() -> None:
