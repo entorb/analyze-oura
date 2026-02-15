@@ -28,6 +28,7 @@ SonarCloud
 SonarQube
 Streamlit
 suptitle
+testpaths
 Torben
 viridis
 xlabel
