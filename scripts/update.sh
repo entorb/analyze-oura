@@ -25,9 +25,12 @@ uv add --dev ruff pre-commit watchdog
 uv lock --upgrade
 uv sync --upgrade
 
-uv run pre-commit autoupdate
+# ruff
+uv run ruff check --fix
+uv run ruff format
 
-./scripts/run_ruff.sh
-./scripts/run_pre-commit.sh
+# pre-commit
+uv run pre-commit autoupdate
+uv run pre-commit run --all-files
 
 echo DONE

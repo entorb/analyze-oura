@@ -12,7 +12,7 @@ default_language_version:
 
 exclude: |
   (?x)^(
-    \.vscode/.*|.*/deprecated/.*
+    \.vscode/.*
   )$
 
 repos:
@@ -62,7 +62,7 @@ repos:
 
   # ruff
   # - repo: https://github.com/astral-sh/ruff-pre-commit
-  #   rev: v0.14.10
+  #   rev: v0.15.1
   #   hooks:
   #     - id: ruff-check
   #       args: [--fix, --exit-non-zero-on-fix]
