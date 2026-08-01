@@ -21,6 +21,7 @@ numplots
 numpy
 Oura
 polyfit
+prek
 pyupgrade
 selectbox
 sharex
