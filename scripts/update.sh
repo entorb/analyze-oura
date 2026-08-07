@@ -8,7 +8,7 @@ set -e
 
 # remove all dependencies
 uv remove matplotlib numpy pandas requests streamlit
-uv remove --dev ruff pre-commit watchdog
+uv remove --dev ruff watchdog
 
 uv lock --upgrade
 uv sync --upgrade
@@ -20,7 +20,7 @@ uv python upgrade
 
 # re-add all dependencies
 uv add matplotlib numpy pandas requests streamlit
-uv add --dev ruff pre-commit watchdog
+uv add --dev ruff watchdog
 
 uv lock --upgrade
 uv sync --upgrade
@@ -30,7 +30,7 @@ uv run ruff format
 uv run ruff check --fix
 
 # pre-commit
-uv run pre-commit autoupdate
-uv run pre-commit run --all-files
+prek autoupdate
+prek run --all-files
 
 echo DONE
