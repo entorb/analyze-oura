@@ -25,6 +25,7 @@ pyupgrade
 rumdl
 selectbox
 sharex
+shfmt
 SonarCloud
 SonarQube
 Streamlit
