@@ -1,0 +1,28 @@
+[project]
+name = "analyze-oura"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "matplotlib>=3.11.1",
+    "numpy>=2.5.2",
+    "pandas>=3.0.5",
+    "requests>=2.34.2",
+    "streamlit>=1.62.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.4",
+]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["src"]
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "if __name__ == \"__main__\":"]
