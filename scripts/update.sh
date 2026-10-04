@@ -1,10 +1,6 @@
 #!/bin/sh
-
-# ensure we are in the root dir
-cd $(dirname $0)/..
-
-# exit upon error
 set -e
+cd "$(dirname "$0")/.."
 
 # remove all dependencies
 uv remove matplotlib numpy pandas requests streamlit
