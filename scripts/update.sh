@@ -27,6 +27,6 @@ uv run ruff check --fix
 
 # pre-commit
 prek autoupdate --cooldown-days 7
-prek run --all-files
+prek run --all-files --quiet
 
 echo DONE
