@@ -1,0 +1,16 @@
+---
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: quarterly
+    cooldown:
+      default-days: 7
+    labels:
+      - dependencies
+    groups:
+      github-actions:
+        patterns:
+          - '*'
